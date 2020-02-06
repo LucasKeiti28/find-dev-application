@@ -5,7 +5,7 @@ module.exports = {
   async index(request, response) {
     const { latitude, longitude, techs } = request.query;
 
-    console.log(latitude, longitude);
+    // console.log(latitude, longitude);
 
     const techArray = parseStringAsArray(techs);
 
@@ -19,7 +19,7 @@ module.exports = {
             type: "Point",
             coordinates: [longitude, latitude]
           },
-          $maxDistance: 10000
+          $maxDistance: 100000000
         }
       }
     });

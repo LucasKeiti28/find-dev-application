@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Dev = require("../models/Dev");
 const parseStringAsArray = require("../utils/parseStringAsArray");
+const { findConnections, sendMessage } = require("../websocket");
 
 module.exports = {
   async store(request, response) {
@@ -34,8 +35,18 @@ module.exports = {
         avatar_url,
         bio,
         techs: techsArray,
-        location
+        location,
+        github_username
       });
+
+      // Filtrar as conexoes que estao no range, e que possuem alguma tech procurada.
+
+      const sendSocketMessageTo = findConnections(
+        { latitude, longitude },
+        techsArray
+      );
+
+      sendMessage(sendSocketMessageTo, "new-dev", dev);
     }
 
     return response.send(dev);
