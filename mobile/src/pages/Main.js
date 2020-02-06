@@ -5,8 +5,7 @@ import {
   Image,
   View,
   TextInput,
-  TouchableOpacity,
-  Keyboard
+  TouchableOpacity
 } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
 import {
@@ -16,6 +15,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 
 import api from "../services/api";
+import { connect, disconnect, subscribeToNewDevs } from "../services/socket";
 
 // import { Container } from './styles';
 
@@ -47,6 +47,18 @@ export default function Main({ navigation }) {
     loadInitialPosition();
   }, []);
 
+  useEffect(() => {
+    subscribeToNewDevs(dev => setDevs([...devs, dev]));
+  }, [devs]);
+
+  function setupWebsocket() {
+    disconnect();
+
+    const { latitude, longitude } = currentRegion;
+
+    connect(latitude, longitude, techs);
+  }
+
   async function loadDevs() {
     const { latitude, longitude } = currentRegion;
 
@@ -61,6 +73,7 @@ export default function Main({ navigation }) {
     console.log(response.data.devs);
 
     setDevs(response.data.devs);
+    setupWebsocket();
   }
 
   function handleRegionChange(region) {
